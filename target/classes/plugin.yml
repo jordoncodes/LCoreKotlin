@@ -1,0 +1,5 @@
+name: LCoreKotlin
+version: '0.1'
+main: dev.lunisity.lcorekotlin.LCore
+api-version: '1.20'
+authors: [Lunisity]

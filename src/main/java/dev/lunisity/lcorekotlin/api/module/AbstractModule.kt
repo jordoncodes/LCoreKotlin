@@ -1,13 +1,13 @@
 package dev.lunisity.lcorekotlin.api.module
 
-import dev.lunisity.lcorekotlin.LCore
 import dev.lunisity.lcorekotlin.api.interfaces.Loadable
+import kotlin.properties.Delegates
 
 abstract class AbstractModule {
 
-    abstract var loadables: MutableList<Loadable>
+    open lateinit var loadables: MutableList<Loadable>
 
-    abstract var enabled: Boolean
+    open var enabled by Delegates.notNull<Boolean>()
 
     companion object {
         lateinit var instance: AbstractModule

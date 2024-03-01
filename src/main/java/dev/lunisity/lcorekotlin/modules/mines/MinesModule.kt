@@ -1,42 +1,42 @@
+@file:Suppress("LateinitVarOverridesLateinitVar")
+
 package dev.lunisity.lcorekotlin.modules.mines
 
 import dev.lunisity.lcorekotlin.LCore
-import dev.lunisity.lcorekotlin.LCore.Companion.core
 import dev.lunisity.lcorekotlin.api.interfaces.Loadable
 import dev.lunisity.lcorekotlin.api.module.AbstractModule
 import dev.lunisity.lcorekotlin.modules.mines.commands.MineCommand
 import dev.lunisity.lcorekotlin.modules.mines.managers.MinesManager
-import dev.lunisity.lcorekotlin.modules.mines.managers.MinesManager.Companion.manager
 import dev.lunisity.lcorekotlin.modules.mines.storage.load.MineLoader
 import dev.lunisity.lcorekotlin.modules.mines.storage.save.MineSaver
-import dev.lunisity.lcorekotlin.modules.mines.storage.save.MineSaver.Companion.mineSaver
 import kotlin.properties.Delegates
 
-class MinesModule(override var loadables: MutableList<Loadable>, override var enabled: Boolean) : AbstractModule() {
+class MinesModule(
+    private var manager: MinesManager,
+    private var mineSaver: MineSaver,
+    private var core: LCore
+) : AbstractModule() {
 
-    companion object {
-        lateinit var minesmodule: MinesModule
-    }
+    override lateinit var loadables: MutableList<Loadable>
+    override var enabled: Boolean by Delegates.notNull()
 
     override fun enable() {
-        core.logger.info("MinesModule has enabled.")
-
-        minesmodule = this
         this.enabled = true
 
-        manager = MinesManager(manager)
+        LCore.get().logger.info("MinesModule has enabled.")
+
+        manager = MinesManager(core, mineSaver, MineLoader(core))
         manager.enable()
 
-        mineSaver = MineSaver()
         mineSaver.setupMinesDirectory()
 
-        register(MineCommand())
+        register(MineCommand(manager))
     }
 
     override fun disable() {
         this.enabled = false
 
-        for (loadable in this.loadables) {
+        for (loadable in loadables) {
             loadable.unregister(this)
         }
 

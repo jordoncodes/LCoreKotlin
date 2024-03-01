@@ -1,43 +1,45 @@
-package dev.lunisity.lcorekotlin;
+package dev.lunisity.lcorekotlin
 
 import dev.lunisity.lcorekotlin.api.module.AbstractModule
 import dev.lunisity.lcorekotlin.modules.mines.MinesModule
-import dev.lunisity.lcorekotlin.modules.mines.MinesModule.Companion.minesmodule
-import org.bukkit.plugin.java.JavaPlugin;
+import dev.lunisity.lcorekotlin.modules.mines.managers.MinesManager
+import dev.lunisity.lcorekotlin.modules.mines.storage.load.MineLoader
+import dev.lunisity.lcorekotlin.modules.mines.storage.save.MineSaver
+import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
-class LCore() : JavaPlugin () {
+class LCore : JavaPlugin () {
 
     companion object {
-
-        lateinit var core: LCore
-
         var modules: LinkedHashMap<String, AbstractModule> = LinkedHashMap()
 
-        fun getModule(name: String): AbstractModule? {
-            return this.modules[name.lowercase(Locale.getDefault())]
-        }
-
+        private lateinit var core: LCore
+        fun get() : LCore { return core }
     }
 
-    override fun onEnable(){
-        logger.info("LCore enabled.")
-        core = this;
+    private lateinit var minesManager: MinesManager
+    private val mineSaver = MineSaver(this, minesManager)
+    private val minesModule = MinesModule (minesManager, mineSaver, this)
+    private val mineLoader = MineLoader(this)
 
-        this.initModules()
+    override fun onEnable(){
+        minesManager = MinesManager(this, mineSaver, mineLoader)
+
+        core = this
+
+        logger.info("LCore enabled.")
+
         this.loadModules()
+        this.initModules()
     }
 
     private fun loadModules(){
-        this.loadModule(minesmodule);
+        this.loadModule(minesModule)
     }
 
 
     private fun initModules() {
-        minesmodule = MinesModule(LinkedList(), true)
-
-        modules.put(minesmodule.name().lowercase(Locale.getDefault()), minesmodule);
+        modules.put(minesModule.name().lowercase(Locale.getDefault()), minesModule)
     }
 
 
@@ -64,7 +66,7 @@ class LCore() : JavaPlugin () {
     }
 
     override fun onDisable() {
-        this.logger.info("LCore disabled.")
+        logger.info("LCore disabled.")
         this.unloadModules()
     }
 }

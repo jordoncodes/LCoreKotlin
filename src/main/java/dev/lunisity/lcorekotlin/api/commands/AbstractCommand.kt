@@ -32,7 +32,7 @@ abstract class AbstractCommand<T : AbstractModule?>(vararg aliases: String?) : C
     override fun execute(sender: CommandSender, label: String, args: Array<String>): Boolean {
         val context: CommandContext = CommandContext(sender, args)
 
-        if (args.size == 0 || subCommands.isEmpty()) {
+        if (args.isEmpty() || subCommands.isEmpty()) {
             this.execute(context)
             return true
         }

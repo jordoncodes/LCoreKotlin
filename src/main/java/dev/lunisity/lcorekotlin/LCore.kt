@@ -11,22 +11,15 @@ import java.util.*
 class LCore : JavaPlugin () {
 
     companion object {
-        var modules: LinkedHashMap<String, AbstractModule> = LinkedHashMap()
-
-        private lateinit var core: LCore
-        fun get() : LCore { return core }
+        val modules: LinkedHashMap<String, AbstractModule> = LinkedHashMap()
     }
 
     private lateinit var minesManager: MinesManager
-    private val mineSaver = MineSaver(this, minesManager)
-    private val minesModule = MinesModule (minesManager, mineSaver, this)
-    private val mineLoader = MineLoader(this)
+    private lateinit var minesModule: MinesModule
 
     override fun onEnable(){
-        minesManager = MinesManager(this, mineSaver, mineLoader)
-
-        core = this
-
+        minesManager = MinesManager(this)
+        minesModule = MinesModule(minesManager, minesManager.mineSaver, this)
         logger.info("LCore enabled.")
 
         this.loadModules()
@@ -39,7 +32,7 @@ class LCore : JavaPlugin () {
 
 
     private fun initModules() {
-        modules.put(minesModule.name().lowercase(Locale.getDefault()), minesModule)
+        modules[minesModule.name().lowercase(Locale.getDefault())] = minesModule
     }
 
 

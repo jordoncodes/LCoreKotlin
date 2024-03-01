@@ -16,10 +16,12 @@ import kotlin.collections.mutableMapOf
 import java.util.*
 
 class MinesManager(
-    private var core: LCore,
-    private var mineSaver: MineSaver,
-    private var mineLoader: MineLoader
+    private val core: LCore,
     ) {
+
+
+    val mineSaver = MineSaver(core, this)
+    val mineLoader = MineLoader(core)
 
     companion object {
 

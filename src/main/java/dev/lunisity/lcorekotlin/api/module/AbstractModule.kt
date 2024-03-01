@@ -7,11 +7,7 @@ abstract class AbstractModule {
 
     open lateinit var loadables: MutableList<Loadable>
 
-    open var enabled by Delegates.notNull<Boolean>()
-
-    companion object {
-        lateinit var instance: AbstractModule
-    }
+    open var enabled = false
 
     abstract fun enable()
 
@@ -20,7 +16,10 @@ abstract class AbstractModule {
     abstract fun name(): String
 
     fun register(loadable: Loadable) {
-        loadable.register(instance)
+        if (!(this::loadables.isInitialized)) {
+            loadables = mutableListOf()
+        }
+        loadable.register(this)
         loadables.add(loadable)
     }
 

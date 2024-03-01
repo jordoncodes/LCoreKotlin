@@ -12,25 +12,20 @@ import dev.lunisity.lcorekotlin.modules.mines.storage.save.MineSaver
 import kotlin.properties.Delegates
 
 class MinesModule(
-    private var manager: MinesManager,
-    private var mineSaver: MineSaver,
-    private var core: LCore
+    private val manager: MinesManager,
+    private val mineSaver: MineSaver,
+    private val core: LCore
 ) : AbstractModule() {
-
-    override lateinit var loadables: MutableList<Loadable>
-    override var enabled: Boolean by Delegates.notNull()
 
     override fun enable() {
         this.enabled = true
 
-        LCore.get().logger.info("MinesModule has enabled.")
-
-        manager = MinesManager(core, mineSaver, MineLoader(core))
+        core.logger.info("MinesModule has enabled.")
         manager.enable()
 
         mineSaver.setupMinesDirectory()
 
-        register(MineCommand(manager))
+        register(MineCommand(manager, core))
     }
 
     override fun disable() {

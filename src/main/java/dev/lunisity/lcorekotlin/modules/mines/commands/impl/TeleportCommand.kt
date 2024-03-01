@@ -6,13 +6,11 @@ import dev.lunisity.lcorekotlin.api.commands.SubCommand
 import dev.lunisity.lcorekotlin.modules.mines.managers.MinesManager
 import org.bukkit.entity.Player
 
-class TeleportCommand(private var manager: MinesManager) : SubCommand() {
+class TeleportCommand(private val manager: MinesManager, private val core: LCore) : SubCommand() {
 
     init {
         initializeAliases("teleport", "go", "tp")
     }
-
-    private val core = LCore.get()
 
     override fun execute(context: CommandContext) {
         val player:Player = context.sender as Player
